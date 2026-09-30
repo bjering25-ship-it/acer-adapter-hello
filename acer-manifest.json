@@ -1,0 +1,36 @@
+{
+  "workload_id": "hello",
+  "version": "1.0.0",
+  "name": "Hello (test adapter)",
+  "description": "Test adapter for Acer Worker v1.1: counts a number sequence step by step, with progress, graceful cancel, summary and CSV/text outputs. No network, no secrets.",
+  "diagnostic": false,
+  "resource_class": "cpu",
+  "argv": ["{python}", "-E", "-s", "{adapter_dir}\\hello\\run.py", "{job_spec}"],
+  "params_schema": {
+    "type": "object",
+    "properties": {
+      "pattern": {
+        "type": "string",
+        "enum": ["linear", "squares", "fibonacci"],
+        "description": "Number sequence to compute"
+      },
+      "steps": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 600,
+        "description": "Number of steps"
+      },
+      "step_seconds": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 5,
+        "description": "Seconds to wait per step"
+      }
+    },
+    "additionalProperties": false
+  },
+  "default_params": {"pattern": "linear", "steps": 30, "step_seconds": 1},
+  "max_runtime_s": 3600,
+  "cancel_grace_s": 10,
+  "graceful_cancel": true
+}
