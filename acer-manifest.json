@@ -1,6 +1,6 @@
 {
   "workload_id": "hello",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "Hello (test adapter)",
   "description": "Test adapter for Acer Worker v1.1: counts a number sequence step by step, with progress, graceful cancel, summary and CSV/text outputs. No network, no secrets.",
   "diagnostic": false,
@@ -11,7 +11,7 @@
     "properties": {
       "pattern": {
         "type": "string",
-        "enum": ["linear", "squares", "fibonacci"],
+        "enum": ["linear", "squares", "fibonacci", "primes"],
         "description": "Number sequence to compute"
       },
       "steps": {

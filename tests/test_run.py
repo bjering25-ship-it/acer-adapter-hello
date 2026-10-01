@@ -73,12 +73,12 @@ class TestStatic(unittest.TestCase):
     def test_manifest(self):
         data = json.loads((REPO / "acer-manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(data["workload_id"], "hello")
-        self.assertEqual(data["version"], "1.0.0")
+        self.assertEqual(data["version"], "1.1.0")
         self.assertIs(data["diagnostic"], False)
         self.assertNotIn("venv", data)
         self.assertEqual(data["argv"], ["{python}", "-E", "-s", "{adapter_dir}\\hello\\run.py", "{job_spec}"])
         props = data["params_schema"]["properties"]
-        self.assertEqual(props["pattern"]["enum"], ["linear", "squares", "fibonacci"])
+        self.assertEqual(props["pattern"]["enum"], ["linear", "squares", "fibonacci", "primes"])
         self.assertEqual(props["steps"]["type"], "integer")
         self.assertEqual(props["step_seconds"]["type"], "number")
         self.assertIs(data["params_schema"]["additionalProperties"], False)
@@ -116,7 +116,7 @@ class TestRun(unittest.TestCase):
 
     def test_patterns(self):
         expected = {"linear": [1, 2, 3, 4, 5, 6], "squares": [1, 4, 9, 16, 25, 36],
-                    "fibonacci": [1, 1, 2, 3, 5, 8]}
+                    "fibonacci": [1, 1, 2, 3, 5, 8], "primes": [2, 3, 5, 7, 11, 13]}
         for pattern, values in expected.items():
             r = self.run_job({"pattern": pattern, "steps": 6, "step_seconds": 0})
             self.assertEqual(r["code"], 0, r["err"])
@@ -151,6 +151,12 @@ class TestRun(unittest.TestCase):
         last = next(f["value"] for f in r["summary"]["fields"] if f["label"] == "Last value")
         self.assertIsInstance(last, str)
         self.assertLessEqual(len(last), 200)
+        self.assertEqual(len(r["progress"]), 600)
+
+    def test_primes_600(self):
+        r = self.run_job({"pattern": "primes", "steps": 600, "step_seconds": 0})
+        self.assertEqual(r["code"], 0, r["err"])
+        self.assertEqual(r["csv"][-1], ["600", "4409"])  # the 600th prime
         self.assertEqual(len(r["progress"]), 600)
 
     def test_graceful_cancel(self):

@@ -1,8 +1,9 @@
-"""hello - Acer Worker test adapter (v1.1).
+"""hello - Acer Worker test adapter (v1.1), adapter version 1.1.0.
 
 Usage (by the worker):  python -E -s hello\\run.py <job.json>
 
-Computes a number sequence (linear, squares, fibonacci) one step at a time:
+Computes a number sequence (linear, squares, fibonacci, primes) one step at
+a time:
   - one progress.jsonl line per step (progress, current/total, stage, message)
   - checks the cancel file between steps (and while waiting): on cancel it
     writes the partial result, prints "cancel honoured" and exits 0
@@ -24,7 +25,7 @@ from pathlib import Path
 from tabulate import tabulate
 
 
-PATTERNS = ("linear", "squares", "fibonacci")
+PATTERNS = ("linear", "squares", "fibonacci", "primes")
 POLL_S = 0.1
 
 
@@ -35,12 +36,19 @@ def now():
 def sequence(pattern):
     """Yields (step, value) for step = 1, 2, ..."""
     step, a, b = 0, 0, 1
+    primes = []
     while True:
         step += 1
         if pattern == "linear":
             yield step, step
         elif pattern == "squares":
             yield step, step * step
+        elif pattern == "primes":
+            candidate = primes[-1] + 1 if primes else 2
+            while any(candidate % p == 0 for p in primes if p * p <= candidate):
+                candidate += 1
+            primes.append(candidate)
+            yield step, candidate
         else:
             a, b = b, a + b
             yield step, a

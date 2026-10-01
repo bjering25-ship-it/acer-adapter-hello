@@ -17,7 +17,7 @@ and FILE outputs. No network, no secrets, no domain logic.
 
 | name | type | values |
 |---|---|---|
-| `pattern` | string | `linear`, `squares`, `fibonacci` |
+| `pattern` | string | `linear`, `squares`, `fibonacci`, `primes` (from 1.1.0) |
 | `steps` | integer | 1-600 |
 | `step_seconds` | number | 0-5 |
 
